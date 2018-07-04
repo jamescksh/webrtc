@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// Create a video track
-	vp8In, err := peerConnection.AddTrack(webrtc.VP8, 90000)
+	vp8In, err := peerConnection.AddTrack(webrtc.H264, 90000)
 	if err != nil {
 		panic(err)
 	}
@@ -64,6 +64,6 @@ func main() {
 
 	// Start pushing buffers on these tracks
 	gst.CreatePipeline(webrtc.Opus, opusIn).Start()
-	gst.CreatePipeline(webrtc.VP8, vp8In).Start()
+	gst.CreatePipeline(webrtc.H264, vp8In).Start()
 	select {}
 }

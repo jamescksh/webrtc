@@ -34,6 +34,7 @@ type TrackType int
 const (
 	VP8 TrackType = iota + 1
 	VP9
+	H264
 	Opus
 )
 
@@ -43,6 +44,8 @@ func (t TrackType) String() string {
 		return "VP8"
 	case VP9:
 		return "VP9"
+	case H264:
+		return "H264"
 	case Opus:
 		return "Opus"
 	default:
@@ -127,7 +130,7 @@ func (r *RTCPeerConnection) CreateAnswer() error {
 // This function returns a channel to push buffers on, and an error if the channel can't be added
 // Closing the channel ends this stream
 func (r *RTCPeerConnection) AddTrack(mediaType TrackType, clockRate uint32) (samples chan<- RTCSample, err error) {
-	if mediaType != VP8 && mediaType != Opus {
+	if mediaType != VP8 && mediaType != H264 && mediaType != Opus {
 		panic("TODO Discarding packet, need media parsing")
 	}
 
@@ -146,6 +149,10 @@ func (r *RTCPeerConnection) AddTrack(mediaType TrackType, clockRate uint32) (sam
 		case VP8:
 			payloader = &codecs.VP8Payloader{}
 			payloadType = 96
+
+		case H264:
+			payloader = &codecs.H264Payloader{}
+			payloadType = 100
 		}
 
 		r.localTracks = append(r.localTracks, sdpTrack)

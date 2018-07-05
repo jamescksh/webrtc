@@ -48,6 +48,13 @@ func (p *H264Payloader) Payload(mtu int, payload []byte) [][]byte {
 	var payloads [][]byte
 
 	emitNalus(payload, func(nalu []byte) {
+		naluType := nalu[0] & 0x1F
+		naluRefIdc := nalu[0] & 0x60
+
+		if naluType == 9 || naluType == 12 {
+			return
+		}
+
 		// Single NALU
 		if len(nalu) <= mtu {
 			out := make([]byte, len(nalu))
@@ -55,9 +62,6 @@ func (p *H264Payloader) Payload(mtu int, payload []byte) [][]byte {
 			payloads = append(payloads, out)
 			return
 		}
-
-		naluType := nalu[0] & 0x1F
-		naluRefIdc := nalu[0] & 0x60
 
 		// FU-A
 		maxFragmentSize := mtu - fuaHeaderSize
